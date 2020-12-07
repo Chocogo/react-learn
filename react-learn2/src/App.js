@@ -1,6 +1,6 @@
 import './App.css';
 import ReduxPage from './component/ReduxPage';
-
+import './utils/compose'
 function App() {
   return (
     <div className="App">
