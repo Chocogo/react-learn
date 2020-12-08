@@ -35,7 +35,7 @@ export function connect (mapStateToProps=state => state, mapDispatchToProps) {
       return () => {
         unsubscribe && unsubscribe()
       }
-    }, [store])
+    }, [store, subscribe])
     return <WrapComponent {...stateProps} {...dispatchProps} {...props}/>
   }
 }
@@ -58,7 +58,7 @@ export function useSelector (selector) {
     return () => {
       unsubscribe()
     }
-  }, [store])
+  }, [store, subscribe])
   return state
 }
 
