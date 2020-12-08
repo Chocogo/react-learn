@@ -14,6 +14,13 @@ function f3 (arg) {
 
 // reduce改写，compose函数
 const compose = (...fns) => {
+  // 边界
+  if (fns.length === 0) {
+    return arg => arg
+  }
+  if (fns.length === 1) {
+    return fns[0]
+  }
   return fns.reduce((accutor, current) => { 
     // accutor: a(b(c(args))), current: a(args)， b(args), c(args),
     // 之所以要返回一个函数，是为了传参，延迟执行，之后进行包裹，将传参传到底部
