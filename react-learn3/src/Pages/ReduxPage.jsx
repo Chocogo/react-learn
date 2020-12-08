@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
+// import { connect } from 'react-redux'
+import { connect } from '../MyReactRedux/index'
 // import { bindActionCreators } from 'redux'
 import { bindActionCreators } from '../MyReactRedux/bindActionCreators'
 
@@ -12,13 +13,13 @@ import { bindActionCreators } from '../MyReactRedux/bindActionCreators'
   (dispatch) => {
     // const add = () => dispatch({ type: 'ADD' })
     // const minus = () => dispatch({ type: 'MINUS' })
-    const creators = {
+    let creators = {
       add: () => ({ type: 'ADD' }),
       minus: () => ({ type: 'MINUS' }),
     }
-    const methods = bindActionCreators(creators, dispatch)
+    creators = bindActionCreators(creators, dispatch)
     // 可以通过bindActionCreators组合action
-    return {dispatch, ...methods}
+    return {dispatch, ...creators}
   },
   // 第三个参数：mergeProps函数
   (stateProps, dispatchProps, ownProps) => {
@@ -41,11 +42,12 @@ class ReduxPage extends Component {
   }
   render() {
     console.log(this.props)
-    const { count, minus, add } = this.props
+    const { count, minus, add, dispatch } = this.props
     return (
       <div>
         { count }
         <button onClick={ add }>add</button>
+        <button onClick={ () => dispatch({ type: 'ADD' }) }>dispatchAdd</button>
         <button onClick={ minus }>minus</button>
         <button onClick={ this.asyAdd }>asyAdd</button>
         <button onClick={ this.promiseAdd }>promiseAdd</button>

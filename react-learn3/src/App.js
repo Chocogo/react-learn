@@ -9,7 +9,7 @@ function App() {
       <header className="App-header">
         <ReduxPage />
         <ReduxHookPage />
-        <HooksPage />
+        {/* <HooksPage /> */}
       </header>
     </div>
   );

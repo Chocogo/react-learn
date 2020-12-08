@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+// import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from '../MyReactRedux'
 
 export default function ReduxHookPage() {
   const count = useSelector(({home}) => home) // 返回数值
