@@ -1,5 +1,5 @@
-// import { createStore, applyMiddleware } from 'redux'
-import { createStore, applyMiddleware } from '../MyRedux'
+// import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, applyMiddleware, combineReducers } from '../MyRedux'
 // import thunk from 'redux-thunk'
 // import logger from 'redux-logger'
 // import promise from 'redux-promise'
@@ -16,7 +16,10 @@ export const countReducer = (state=0, {type, payload=1}) => {
   }
 }
 
-const store = createStore(countReducer, applyMiddleware(thunk, logger))
+const store = createStore(
+  combineReducers({home: countReducer}),
+  applyMiddleware(promise, thunk, logger)
+)
 
 // logger实现
 function logger ({ getState }) {
