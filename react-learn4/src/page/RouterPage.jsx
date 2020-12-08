@@ -33,6 +33,7 @@ const More = ({ match }) => {
   )
 }
 
+
 export default function RouterPage() {
   return (
     <div>
@@ -41,6 +42,7 @@ export default function RouterPage() {
         <Link to="/home">home</Link>
         <Link to="/product">product</Link>
         <Link to="/more">more</Link>
+        
         <Switch>
           <Route path="/home" component={Home}/>
           <Route path="/product/:id" component={Product}/>
