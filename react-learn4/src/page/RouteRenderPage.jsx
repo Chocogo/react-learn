@@ -1,5 +1,7 @@
 import React from 'react'
 import { HashRouter as Router, Link, Switch, Route } from 'react-router-dom'
+import PrivateRoute from '../component/PrivateRoute'
+import LoginPage from './LoginPage'
 
 const Home = () => {
   return (
@@ -39,21 +41,30 @@ export default function RouteRenderPage() {
     <div>
       <button onClick={add}>add</button>
       <Router>
-        <Link to="/home">home</Link>
-        <Link to="/record">record</Link>
-        <Link to="/add">add</Link>
+        <Link to="/home">home </Link>
+        <Link to="/record">record </Link>
+        <Link to="/add">add </Link>
+        <div>
+          <Link to="/login">login</Link>
+        </div>
         <Switch>
-        <Route path="/home" 
-          // children={() => <div>children</div>} 
-          component={ Home } 
-          // render={ () => <div>render </div> } 
-        />
-        <Route path="/record" component={Record}/>
-        {/* component返回匿名组件方式，子组件每次都会挂载卸载（导致性能问题）, children和render则不会 */}
-        <Route path="/add" component={() => <AddPage count={count}/>}/>
-        {/* <Route path="/add" children={() => <AddPage count={count}/>}/> */}
-        {/* <Route path="/add" render={() => <AddPage count={count}/>}/> */}
-        <Route component={Error}/>
+          <Route path="/home" 
+            // children={() => <div>children</div>} 
+            component={ Home } 
+            // render={ () => <div>render </div> } 
+          />
+          {/* component返回匿名组件方式，子组件每次都会挂载卸载（导致性能问题）, children和render则不会 */}
+          {/* <Route path="/add" component={() => <AddPage count={count}/>}/> */}
+          {/* <Route path="/add" children={() => <AddPage count={count}/>}/> */}
+          <Route path="/add" render={() => <AddPage count={count}/>}/>
+
+          {/* 路由守卫： 守卫record */}
+          {/* <Route path="/record" component={Record}/> */}
+          <PrivateRoute path="/record" component={ Record }/>
+          {/* 登录 */}
+          <Route path="/login" component={ LoginPage } />
+          
+          <Route component={Error}/>
         </Switch>
       </Router>
     </div>
