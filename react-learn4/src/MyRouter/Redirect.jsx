@@ -23,9 +23,7 @@ export default class Redirect extends Component {
     )
   }
 }
-
-
- class LifeCircle extends Component {
+class LifeCircle extends Component {
   componentDidMount() {
     this.props.didMount.call(this, this)
   }

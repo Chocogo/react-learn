@@ -1,8 +1,9 @@
 import React from 'react'
 import Login from './LoginPage'
-import { BrowserRouter as Router, Link, Route, useHistory, useLocation, useParams, useRouteMatch, withRouter, Switch } from '../MyRouter'
+import { BrowserRouter as Router, Link, Route, useHistory, useLocation, useParams, useRouteMatch, withRouter, Switch, Prompt } from '../MyRouter'
 import PrivateRoute from '../component/PrivateRoute'
-// import { BrowserRouter as Router, Link, Route, useHistory, useLocation, useParams, useRouteMatch, withRouter, Switch } from 'react-router-dom'
+// import { BrowserRouter as Router, Link, Route, useHistory, useLocation, useParams, useRouteMatch, withRouter, Switch, Prompt } from 'react-router-dom'
+// MemoryRouter 路由不发送变化
 
 const Detail = () => {
   return (
@@ -55,6 +56,12 @@ const User = () => {
 // class组件嵌套情况（render是传入() => {<A />}）
 
 const Good = withRouter(class Good extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      confirm: true
+    }
+  }
   render() {
     const { match } = this.props
     console.log(this.props)
@@ -63,7 +70,10 @@ const Good = withRouter(class Good extends React.Component {
     return (
       <div>
         <h2>Good, id is  {id}</h2>
+        <button onClick={() => this.setState({ confirm: false })}>change confirm</button>
         <Link to={url + '/detail'}>detail</Link>
+        <Link to="/">index</Link>
+        <Prompt when={ this.state.confirm } message="确定离开？" />
         <Route path={url + '/detail'} component={Detail} />
       </div>
     )
