@@ -1,12 +1,14 @@
 import './App.css';
-import RouteRenderPage from './page/RouteRenderPage';
+import RouterMake from './page/RouterMake';
+// import RouteRenderPage from './page/RouteRenderPage';
 // import RouterPage from './page/RouterPage';
 
 function App() {
   return (
     <div className="App">
       {/* <RouterPage /> */}
-      <RouteRenderPage />
+      {/* <RouteRenderPage /> */}
+      <RouterMake />
     </div>
   );
 }
