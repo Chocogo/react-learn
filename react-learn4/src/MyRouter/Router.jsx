@@ -3,6 +3,15 @@ import { RouterContext } from './RouterContext'
 
 
 export default class Router extends Component {
+  // match来自router, router提供默认的match方法
+  static computeRootMatch(pathname){
+    return {
+      path: '/',
+      url: '/',
+      params: {},
+      isExact: pathname === '/'
+    }
+  }
   constructor(props) {
     super(props)
     this.state = {
@@ -21,7 +30,8 @@ export default class Router extends Component {
     const { history } = this.props
     return (<RouterContext.Provider value={{ 
       history,
-      location: this.state.location
+      location: this.state.location,
+      match: Router.computeRootMatch(this.state.location.pathname)
       }}>
       {this.props.children}
     </RouterContext.Provider>)
