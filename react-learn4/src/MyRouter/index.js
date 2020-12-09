@@ -4,6 +4,7 @@ import Route from './Route'
 import { useHistory, useLocation, useParams, useRouteMatch } from './hooks'
 import withRouter from './withRouter'
 import Switch from './Switch.jsx'
+import Redirect from './Redirect.jsx'
 
 export {
   BrowserRouter,
@@ -14,5 +15,6 @@ export {
   useParams, 
   useRouteMatch,
   withRouter,
-  Switch
+  Switch,
+  Redirect
 }

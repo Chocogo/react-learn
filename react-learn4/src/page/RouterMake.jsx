@@ -1,6 +1,9 @@
 import React from 'react'
+import Login from './LoginPage'
 import { BrowserRouter as Router, Link, Route, useHistory, useLocation, useParams, useRouteMatch, withRouter, Switch } from '../MyRouter'
+import PrivateRoute from '../component/PrivateRoute'
 // import { BrowserRouter as Router, Link, Route, useHistory, useLocation, useParams, useRouteMatch, withRouter, Switch } from 'react-router-dom'
+
 const Detail = () => {
   return (
     <div>detail</div>
@@ -68,11 +71,11 @@ const Good = withRouter(class Good extends React.Component {
 })
 
 
-const Login = () => {
-  return (
-    <h2>Login</h2>
-  )
-}
+// const Login = () => {
+//   return (
+//     <h2>Login</h2>
+//   )
+// }
 const _404Page = () => <h2>404Page</h2>
 
 export default function RouterMake() {
@@ -84,10 +87,12 @@ export default function RouterMake() {
       <Link to="/login">登录</Link>
       <Switch >
         <Route exact path="/" component={ Index } />
-        <Route path="/user" component={ User } />
+        {/* <Route path="/user" component={ User } /> */}
         {/* <Route path="/good/:id" component={ Good } /> */}
         <Route path="/good/:id" render={ () => <Good /> } />
         <Route path="/login" component={ Login } />
+        {/* <Route path="/private" component={ () => <Priv }/> */}
+        <PrivateRoute path="/user" component={ User }/>
         <Route component={_404Page}/>
       </Switch>
     </Router>

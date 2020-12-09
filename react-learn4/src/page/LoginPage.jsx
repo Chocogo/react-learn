@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+// import { Redirect } from 'react-router-dom'
+import { Redirect } from '../MyRouter'
 
 export default connect(
   ({user}) => ({isLogin: user.isLogin}),
@@ -8,10 +9,8 @@ export default connect(
     login: () => ({ type: 'LOGIN_SUCCESS' })
   }
 )(function LoginPage({isLogin, login, location}) {
-  console.log(location, '--location')
   if (isLogin) {
-    const { redirect='/home' } = location.state || {}
-    console.log(redirect, '---redirect')
+    const { redirect='/' } = location.state || {}
     return <Redirect to={redirect} />
   }
   return (
