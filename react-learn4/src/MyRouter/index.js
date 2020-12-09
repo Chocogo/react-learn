@@ -2,6 +2,8 @@ import BrowserRouter from './BrowserRouter'
 import Link from './Link'
 import Route from './Route'
 import { useHistory, useLocation, useParams, useRouteMatch } from './hooks'
+import withRouter from './withRouter'
+import Switch from './Switch.jsx'
 
 export {
   BrowserRouter,
@@ -10,5 +12,7 @@ export {
   useHistory, 
   useLocation, 
   useParams, 
-  useRouteMatch
+  useRouteMatch,
+  withRouter,
+  Switch
 }
