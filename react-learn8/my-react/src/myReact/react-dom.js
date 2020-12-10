@@ -1,4 +1,4 @@
-import { TEXT } from "./const"
+import { PLACEMENT, TEXT } from "./const"
 
 // 下个任务单元（fiber）
 let nextUnitWork = null
@@ -18,7 +18,8 @@ function render (vnode, container) {
     props: {
       children: [vnode] // 存属性
     },
-    base: currentRoot // diff比较时，需要比较两次，base要保存上一次的值
+    base: currentRoot, // diff比较时，需要比较两次，base要保存上一次的值
+    effectTag: PLACEMENT
   }
   // 定义下一个工作单元
   nextUnitWork = wipRoot
@@ -114,7 +115,6 @@ function updateHostComponent(fiber) {
   // 2、协调子元素, 构建子元素fiber架构
   const { children } = fiber.props
   reconcileChildren_Fiber(fiber, children)
-  console.log('fiber---', fiber)
 }
 
 function performUnitWork(fiber) {
@@ -140,6 +140,36 @@ function performUnitWork(fiber) {
   }
 }
 
+/****commitRoot*****/ 
+// 从根节点开始提交
+function commitRoot(wipRoot) {
+  commitWorker(wipRoot.child)
+  // 保留上一次的fiber
+  currentRoot = wipRoot
+  // 提交后就不用根fiber了
+  wipRoot = null
+}
+// 从根fiber执行提交: 寻找最近的父节点(有可能是Fragment,是没有node的)，通过effect去执行挂载
+// 递归遍历子元素，兄弟元素，执行提交
+function commitWorker(fiber) {
+  if (!fiber) {
+    return 
+  }
+  // 找父
+  let parentNodeFiber = fiber.return
+  while(!parentNodeFiber.node) {
+    parentNodeFiber = parentNodeFiber.return
+  }
+  let parentNode = parentNodeFiber.node
+  if (fiber.effectTag === PLACEMENT && fiber.node !== null) {
+    parentNode.appendChild(fiber.node)
+  }
+  // todo 删除，更新
+  commitWorker(fiber.child)
+  commitWorker(fiber.sibling)
+}
+/*********/ 
+
 // 工作单元
 function workLoop(deadline) {
   // 有时间和有任务单元
@@ -148,7 +178,8 @@ function workLoop(deadline) {
   }
   // 没有任务，还未提交
   if (!nextUnitWork && wipRoot) {
-    // commit
+    // 进行commit提交: 从根fiber开始提交
+    commitRoot(wipRoot)
   }
   // 递归
   requestIdleCallback(workLoop)
