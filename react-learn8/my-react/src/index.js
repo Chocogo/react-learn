@@ -27,7 +27,7 @@ const jsx = (
   <div className="main">
     <div>首页</div>
     <a href="https://www.baidu.com">baidu</a>
-    <FunctionComponent myName="tom"/>
+    {/* <FunctionComponent myName="tom"/>
     <ClassComp myName="Jenny"/>
     <>
       <h3>标题</h3>
@@ -41,7 +41,7 @@ const jsx = (
           </div>
         )
       })
-    }
+    } */}
   </div>
 )
 

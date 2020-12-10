@@ -1,10 +1,27 @@
 import { TEXT } from "./const"
 
+// 下个任务单元（fiber）
+let nextUnitWork = null
+// 根fiber(work in progress root)
+let wipRoot = null
+// 当前个根节点
+let currentRoot = null
+
 // 实现ReactDOM.remder
 function render (vnode, container) {
   // vnode-> node, 插入到页面中
-  const node = createNode(vnode) // +3 -2
-  container.appendChild(node) //   -3
+  // const node = createNode(vnode) // +3 -2
+  // container.appendChild(node) //   -3
+  // 根fiber
+  wipRoot = {
+    node: container, // 当前真实dom节点
+    props: {
+      children: [vnode] // 存属性
+    },
+    base: currentRoot // diff比较时，需要比较两次，base要保存上一次的值
+  }
+  // 定义下一个工作单元
+  nextUnitWork = wipRoot
 }
 // 实现vnode-> node
 function createNode(vnode) {
@@ -21,7 +38,7 @@ function createNode(vnode) {
     node = document.createDocumentFragment()
   }
   // 递归子节点
-  reconcileChildren(props.children, node) // +1 -5
+  // reconcileChildren(props.children, node) // +1 -5
   // 更新节点属性: 先文本，后标签
   updateNode(node, props)
   return node // -1  -6
@@ -65,6 +82,79 @@ function updateClassComponent (vnode) {
   const vvnode = instance.render()
   return createNode(vvnode)
 }
+
+/********实现fiber************/
+let preSibling = null
+// 结果： 遍历children， 构建以workInProgressFiber为首的链表结构
+function reconcileChildren_Fiber (workInProgressFiber, children) {
+  children.forEach((child, index) => {
+    let newFiber = {
+      node: null,
+      base: null, // 初次
+      props: child.props,
+      type: child.type,
+      return: workInProgressFiber // 父
+    }
+    // 第一个child为父的child, 保存当前fiber,下次（非第一次）的sibling构建newFiber
+    if (index === 0) { // 0
+      workInProgressFiber.child = newFiber
+    } else { // 2
+      preSibling.sibling = newFiber
+    }
+    preSibling = newFiber // 1
+  })
+}
+
+function updateHostComponent(fiber) {
+  // todo fiber 结构-->render()中定义根fiber和nextUnitWork
+  // 1、生成node节点: vnode->node
+  if(!fiber.node) {
+    fiber.node = createNode(fiber)
+  }
+  // 2、协调子元素, 构建子元素fiber架构
+  const { children } = fiber.props
+  reconcileChildren_Fiber(fiber, children)
+  console.log('fiber---', fiber)
+}
+
+function performUnitWork(fiber) {
+  // 1. 执行当前任务
+  const { type } = fiber
+  if (typeof type === 'function') {
+
+  } else {
+    // h5标签
+    updateHostComponent(fiber)
+  }
+  // 2. 返回下一个任务： child > sibling > return -> sibling 
+  if (fiber.child) {
+    return fiber.child
+  }
+  let nextFiber = fiber
+  while(nextFiber) {
+    if (nextFiber.sibling) {
+      return nextFiber.sibling
+    }
+    // 最右一个元素没有sibling, 重新递归返回父元素，走父元素的sibling判断
+    nextFiber = nextFiber.return
+  }
+}
+
+// 工作单元
+function workLoop(deadline) {
+  // 有时间和有任务单元
+  if(deadline.timeRemaining() > 1 && nextUnitWork) {
+    nextUnitWork = performUnitWork(nextUnitWork)
+  }
+  // 没有任务，还未提交
+  if (!nextUnitWork && wipRoot) {
+    // commit
+  }
+  // 递归
+  requestIdleCallback(workLoop)
+}
+
+requestIdleCallback(workLoop)
 
 
 export default {
