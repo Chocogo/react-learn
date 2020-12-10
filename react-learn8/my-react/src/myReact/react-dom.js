@@ -70,23 +70,25 @@ function updateNode(node, nextProps) {
       }
     })
 }
-// 更新函数节点: 需要知道挂载的节点，所以需要parentNode
-function updateFunctionNode(vnode) {
-  const { type, props } = vnode
-  const vvnode = type(props)
-  return createNode(vvnode)
-}
-// 更新类节点
-function updateClassComponent (vnode) {
-  const { type, props } = vnode
-  const instance = new type(props) 
-  const vvnode = instance.render()
-  return createNode(vvnode)
-}
+// // 更新函数节点: 需要知道挂载的节点，所以需要parentNode
+// function updateFunctionNode(vnode) {
+//   const { type, props } = vnode
+//   const vvnode = type(props)
+//   return createNode(vvnode)
+// }
+// // 更新类节点
+// function updateClassComponent (vnode) {
+//   const { type, props } = vnode
+//   const instance = new type(props) 
+//   const vvnode = instance.render()
+//   return createNode(vvnode)
+// }
 
 /********实现fiber************/
+
+
 let preSibling = null
-// 结果： 遍历children， 构建以workInProgressFiber为首的链表结构
+// 结果： 遍历children(vnode array)， 构建以workInProgressFiber为首的链表结构
 function reconcileChildren_Fiber (workInProgressFiber, children) {
   children.forEach((child, index) => {
     let newFiber = {
@@ -94,7 +96,8 @@ function reconcileChildren_Fiber (workInProgressFiber, children) {
       base: null, // 初次
       props: child.props,
       type: child.type,
-      return: workInProgressFiber // 父
+      return: workInProgressFiber, // 父
+      effectTag: PLACEMENT
     }
     // 第一个child为父的child, 保存当前fiber,下次（非第一次）的sibling构建newFiber
     if (index === 0) { // 0
@@ -117,11 +120,29 @@ function updateHostComponent(fiber) {
   reconcileChildren_Fiber(fiber, children)
 }
 
+// 更新函数节点: 取出vnode(jsx), 传给reconcileChildren_Fiber
+function updateFunctionNode(fiber) {
+  const { type, props } = fiber
+  const children = [type(props)]
+  reconcileChildren_Fiber(fiber, children)
+}
+
+// 更新类节点
+function updateClassComponent (fiber) {
+  const { type, props } = fiber
+  const instance = new type(props) 
+  const children = [ instance.render() ]
+  return reconcileChildren_Fiber(fiber, children)
+}
+
 function performUnitWork(fiber) {
   // 1. 执行当前任务
   const { type } = fiber
   if (typeof type === 'function') {
-
+    // 函数，修改updateComponent
+    type.isReactComponent 
+      ? updateClassComponent(fiber)
+      : updateFunctionNode(fiber)
   } else {
     // h5标签
     updateHostComponent(fiber)
@@ -142,19 +163,21 @@ function performUnitWork(fiber) {
 
 /****commitRoot*****/ 
 // 从根节点开始提交
-function commitRoot(wipRoot) {
+function commitRoot() {
   commitWorker(wipRoot.child)
   // 保留上一次的fiber
   currentRoot = wipRoot
+  // console.log(parentNodeFiber)
   // 提交后就不用根fiber了
   wipRoot = null
 }
-// 从根fiber执行提交: 寻找最近的父节点(有可能是Fragment,是没有node的)，通过effect去执行挂载
+// 从根fiber执行提交: 寻找最近的父节点(有可能是Fragment,是没有node的)，通过effectTag去执行对应操作
 // 递归遍历子元素，兄弟元素，执行提交
 function commitWorker(fiber) {
   if (!fiber) {
     return 
   }
+  // console.log(fiber)
   // 找父
   let parentNodeFiber = fiber.return
   while(!parentNodeFiber.node) {
@@ -179,7 +202,7 @@ function workLoop(deadline) {
   // 没有任务，还未提交
   if (!nextUnitWork && wipRoot) {
     // 进行commit提交: 从根fiber开始提交
-    commitRoot(wipRoot)
+    commitRoot()
   }
   // 递归
   requestIdleCallback(workLoop)
